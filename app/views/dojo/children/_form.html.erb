@@ -1,0 +1,77 @@
+<%= form_with model: [ :dojo, child ], class: "card space-y-5" do |form| %>
+  <% if child.errors.any? %>
+    <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+      <ul class="list-inside list-disc space-y-1">
+        <% child.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, class: "field", required: true, autofocus: child.new_record? %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :birthdate, "Birthday (optional)", class: "label" %>
+      <%= form.date_field :birthdate, class: "field" %>
+    </div>
+    <div>
+      <%= form.label :emoji, "Emoji (optional)", class: "label" %>
+      <%= form.text_field :emoji, class: "field", maxlength: 8, placeholder: "🦊" %>
+      <p class="hint">Shown when there is no photo.</p>
+    </div>
+  </div>
+
+  <div>
+    <span class="label">Colour</span>
+    <div class="flex flex-wrap gap-2">
+      <% Child::COLORS.each do |color| %>
+        <label class="cursor-pointer">
+          <%= form.radio_button :color, color, class: "peer sr-only" %>
+          <span class="block h-9 w-9 rounded-full ring-offset-2 peer-checked:ring-2 <%= avatar_bg_classes(color) %> <%= ring_classes(color) %>"></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :avatar, "Photo (optional)", class: "label" %>
+    <%= form.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "field" %>
+    <% if child.avatar.attached? %>
+      <label class="mt-2 flex items-center gap-2 text-sm text-slate-600">
+        <%= check_box_tag "child[remove_avatar]", "1", false, class: "rounded border-slate-300" %>
+        Remove the current photo
+      </label>
+    <% end %>
+  </div>
+
+  <hr class="border-slate-200">
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :pin, "Kid PIN (optional)", class: "label" %>
+      <%= form.password_field :pin, class: "field", inputmode: "numeric", pattern: "\\d{4,6}", autocomplete: "off" %>
+      <p class="hint">4–6 digits for the shared tablet. Leave blank to keep the current PIN.</p>
+    </div>
+    <div>
+      <%= form.label :pin_confirmation, "Confirm PIN", class: "label" %>
+      <%= form.password_field :pin_confirmation, class: "field", inputmode: "numeric", autocomplete: "off" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= form.submit class: "btn-primary" %>
+    <%= link_to "Cancel", dojo_children_path, class: "btn-secondary" %>
+  </div>
+<% end %>
+
+<%# Archive lives outside the form: a button_to is itself a form, and HTML
+    forbids nesting one form inside another. %>
+<% unless child.new_record? || child.archived? %>
+  <div class="mt-3 flex justify-end">
+    <%= button_to "Archive #{child.name}", dojo_child_path(child), method: :delete, class: "btn-danger",
+          form: { data: { turbo_confirm: "Archive #{child.name}? Their point history is kept." } } %>
+  </div>
+<% end %>

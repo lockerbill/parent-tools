@@ -1,0 +1,23 @@
+<% if behaviors.empty? %>
+  <div class="card text-sm text-slate-500">
+    Nothing here yet. <%= link_to "Add one", new_dojo_behavior_path(category: category), class: "font-medium underline" %>.
+  </div>
+<% else %>
+  <ul class="card divide-y divide-slate-100 p-0"
+      data-controller="reorder"
+      data-reorder-url-value="<%= reorder_dojo_behaviors_path %>">
+    <% behaviors.each do |behavior| %>
+      <li class="flex items-center gap-3 px-3 py-3" draggable="true"
+          data-reorder-target="item" data-reorder-id="<%= behavior.id %>"
+          data-action="dragstart->reorder#start dragover->reorder#over dragend->reorder#finish drop->reorder#finish">
+        <span class="cursor-grab select-none px-1 text-slate-300" aria-hidden="true">⠿</span>
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg ring-1 <%= chip_classes(behavior.color) %>" aria-hidden="true">
+          <%= behavior.icon %>
+        </span>
+        <p class="min-w-0 flex-1 truncate text-sm font-medium"><%= behavior.name %></p>
+        <span class="text-sm font-bold tabular-nums <%= points_text_classes(behavior.points) %>"><%= behavior.signed_points %></span>
+        <%= link_to "Edit", edit_dojo_behavior_path(behavior), class: "btn-ghost" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

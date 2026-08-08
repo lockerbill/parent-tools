@@ -1,0 +1,17 @@
+# Ada's ledger adds up to her cached balance of 10, so recalculating is a no-op.
+ada_helping:
+  child: ada
+  behavior: helping
+  user: owner
+  points: 2
+  requested_points: 2
+  label: Helping at home
+  occurred_at: <%= 2.days.ago.to_fs(:db) %>
+
+ada_good_week:
+  child: ada
+  user: owner
+  points: 8
+  requested_points: 8
+  label: Great week
+  occurred_at: <%= 5.days.ago.to_fs(:db) %>

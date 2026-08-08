@@ -1,0 +1,67 @@
+<%# Dojo::Behavior lives in a module, so the url and scope are spelled out. %>
+<%= form_with model: behavior, scope: :behavior, class: "card space-y-5",
+      url: behavior.new_record? ? dojo_behaviors_path : dojo_behavior_path(behavior) do |form| %>
+  <% if behavior.errors.any? %>
+    <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+      <ul class="list-inside list-disc space-y-1">
+        <% behavior.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, "What is it called?", class: "label" %>
+    <%= form.text_field :name, class: "field", required: true, autofocus: behavior.new_record?, placeholder: "Helping at home" %>
+  </div>
+
+  <div>
+    <span class="label">Kind</span>
+    <div class="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1">
+      <% { "positive" => "Positive", "needs_work" => "Needs work" }.each do |value, text| %>
+        <label class="cursor-pointer">
+          <%= form.radio_button :category, value, class: "peer sr-only" %>
+          <span class="block rounded-lg px-3 py-2 text-center text-sm font-semibold text-slate-500 peer-checked:bg-white peer-checked:text-slate-900 peer-checked:shadow-sm">
+            <%= text %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+    <p class="hint">“Needs work” always subtracts, whichever sign you type below.</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :points, class: "label" %>
+      <%= form.number_field :points, class: "field", required: true, min: -100, max: 100, step: 1 %>
+    </div>
+    <div>
+      <%= form.label :icon, "Emoji", class: "label" %>
+      <%= form.text_field :icon, class: "field", maxlength: 8, required: true %>
+    </div>
+  </div>
+
+  <div>
+    <span class="label">Colour</span>
+    <div class="flex flex-wrap gap-2">
+      <% Dojo::Behavior::COLORS.each do |color| %>
+        <label class="cursor-pointer">
+          <%= form.radio_button :color, color, class: "peer sr-only" %>
+          <span class="block h-9 w-9 rounded-full ring-offset-2 peer-checked:ring-2 <%= avatar_bg_classes(color) %> <%= ring_classes(color) %>"></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= form.submit class: "btn-primary" %>
+    <%= link_to "Cancel", dojo_behaviors_path, class: "btn-secondary" %>
+  </div>
+<% end %>
+
+<%# Archive lives outside the form: a button_to is itself a form. %>
+<% unless behavior.new_record? || behavior.archived? %>
+  <div class="mt-3 flex justify-end">
+    <%= button_to "Archive", dojo_behavior_path(behavior), method: :delete, class: "btn-danger",
+          form: { data: { turbo_confirm: "Archive “#{behavior.name}”? Past awards stay in the history." } } %>
+  </div>
+<% end %>

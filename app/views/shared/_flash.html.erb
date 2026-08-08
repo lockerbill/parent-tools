@@ -1,0 +1,6 @@
+<div id="toasts" class="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 p-4">
+  <% flash.each do |type, message| %>
+    <% next if message.blank? %>
+    <%= render "shared/toast", type: type, message: message %>
+  <% end %>
+</div>

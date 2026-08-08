@@ -1,0 +1,13 @@
+screen_time:
+  family: lockers
+  name: 30 min extra screen time
+  cost: 5
+  icon: 📺
+  position: 1
+
+movie:
+  family: lockers
+  name: Choose Friday movie
+  cost: 30
+  icon: 🍿
+  position: 2

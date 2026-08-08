@@ -1,0 +1,52 @@
+<% page_title "Reward requests" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-lg font-bold tracking-tight">Reward requests</h1>
+  <%= link_to "Manage rewards", dojo_rewards_path, class: "btn-secondary" %>
+</div>
+
+<h2 class="section-title">Waiting</h2>
+<% if @pending.empty? %>
+  <div class="card text-sm text-slate-500">Nothing waiting for approval.</div>
+<% else %>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <% @pending.each do |redemption| %>
+      <li class="flex flex-wrap items-center gap-3 px-4 py-3">
+        <span class="text-xl" aria-hidden="true"><%= redemption.reward.icon %></span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium"><%= redemption.child.name %> · <%= redemption.reward.name %></p>
+          <p class="text-xs text-slate-500">
+            <%= redemption.cost %> points · balance <%= redemption.child.points_balance %> · <%= friendly_time(redemption.created_at) %>
+          </p>
+        </div>
+        <%= button_to "Approve", dojo_redemption_path(redemption, commit_action: "approve"), method: :patch, class: "btn-primary px-3 py-1.5" %>
+        <%= button_to "Decline", dojo_redemption_path(redemption, commit_action: "deny"), method: :patch, class: "btn-secondary px-3 py-1.5" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<h2 class="section-title mt-8">History</h2>
+<% if @decided.empty? %>
+  <div class="card text-sm text-slate-500">No redemptions yet.</div>
+<% else %>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <% @decided.each do |redemption| %>
+      <li class="flex flex-wrap items-center gap-3 px-4 py-3">
+        <span class="text-xl" aria-hidden="true"><%= redemption.reward.icon %></span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium"><%= redemption.child.name %> · <%= redemption.reward.name %></p>
+          <p class="text-xs text-slate-500">
+            <%= redemption.status.humanize %> · <%= redemption.cost %> points · <%= friendly_time(redemption.decided_at || redemption.created_at) %>
+            <% if redemption.user %>· by <%= redemption.user.name %><% end %>
+          </p>
+        </div>
+        <% if redemption.approved? %>
+          <%= button_to "Mark as given", dojo_redemption_path(redemption, commit_action: "fulfill"), method: :patch, class: "btn-secondary px-3 py-1.5" %>
+          <%= button_to "Refund", dojo_redemption_path(redemption, commit_action: "cancel"), method: :patch, class: "btn-ghost",
+                form: { data: { turbo_confirm: "Give the #{redemption.cost} points back?" } } %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

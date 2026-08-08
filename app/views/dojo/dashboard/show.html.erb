@@ -1,0 +1,62 @@
+<% page_title "Dashboard" %>
+
+<% if @pending_redemptions.any? %>
+  <div class="card mb-4 border-l-4 border-l-amber-400">
+    <h2 class="mb-2 text-sm font-semibold text-slate-700">Waiting for you</h2>
+    <ul class="divide-y divide-slate-100">
+      <% @pending_redemptions.each do |redemption| %>
+        <li class="flex items-center gap-3 py-2">
+          <span class="text-xl" aria-hidden="true"><%= redemption.reward.icon %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium"><%= redemption.child.name %> wants “<%= redemption.reward.name %>”</p>
+            <p class="text-xs text-slate-500"><%= redemption.cost %> points · <%= friendly_time(redemption.created_at) %></p>
+          </div>
+          <%= button_to "Approve", dojo_redemption_path(redemption, commit_action: "approve"), method: :patch, class: "btn-primary px-3 py-1.5" %>
+          <%= button_to "No", dojo_redemption_path(redemption, commit_action: "deny"), method: :patch, class: "btn-secondary px-3 py-1.5" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% if @children.empty? %>
+  <div class="card text-center">
+    <p class="text-4xl" aria-hidden="true">👶</p>
+    <h2 class="mt-2 text-lg font-semibold">No children yet</h2>
+    <p class="mt-1 text-sm text-slate-600">Add your kids and you can start awarding points straight away.</p>
+    <%= link_to "Add a child", new_dojo_child_path, class: "btn-primary mt-4" %>
+  </div>
+<% else %>
+  <%= form_with url: new_dojo_point_event_path, method: :get, data: { turbo_frame: "modal", controller: "multi-select" } do %>
+    <div class="mb-2 flex items-center justify-between">
+      <h1 class="text-lg font-bold tracking-tight">Today</h1>
+      <%= link_to "Manage kids", dojo_children_path, class: "btn-ghost" %>
+    </div>
+
+    <div id="children" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <%= render partial: "dojo/dashboard/child_card", collection: @children, as: :child %>
+    </div>
+
+    <div data-multi-select-target="bar" hidden
+         class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-3 backdrop-blur">
+      <div class="mx-auto flex w-full max-w-3xl items-center gap-3">
+        <p class="text-sm text-slate-600">
+          <span data-multi-select-target="count">0</span> selected
+        </p>
+        <button type="button" data-action="multi-select#clear" class="btn-ghost">Clear</button>
+        <%= submit_tag "Award points →", class: "btn-primary ml-auto", data: { turbo_frame: "modal" } %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<section class="mt-8">
+  <div class="mb-3 flex items-center justify-between">
+    <h2 class="section-title mb-0">Recent activity</h2>
+    <%= link_to "See all", dojo_point_events_path, class: "text-sm font-medium text-slate-500 hover:text-slate-900" %>
+  </div>
+
+  <div id="activity_feed">
+    <%= render "dojo/point_events/feed", events: @recent_events %>
+  </div>
+</section>

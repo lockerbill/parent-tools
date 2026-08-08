@@ -1,0 +1,30 @@
+<% page_title "Parent accounts" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-lg font-bold tracking-tight">Parent accounts</h1>
+  <% if current_user.owner? %>
+    <%= link_to "Add", new_dojo_user_path, class: "btn-primary" %>
+  <% end %>
+</div>
+
+<ul class="card divide-y divide-slate-100 p-0">
+  <% @users.each do |user| %>
+    <li class="flex items-center gap-3 px-4 py-3">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-700">
+        <%= user.initials %>
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-medium"><%= user.name %><% if user == current_user %> <span class="text-slate-400">(you)</span><% end %></p>
+        <p class="truncate text-xs text-slate-500"><%= user.email_address %> · <%= user.role.humanize %></p>
+      </div>
+      <% if user.deletable_by?(current_user) %>
+        <%= button_to "Remove", dojo_user_path(user), method: :delete, class: "btn-danger px-3 py-1.5",
+              form: { data: { turbo_confirm: "Remove #{user.name}?" } } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<p class="mt-4 text-xs text-slate-500">
+  The owner account cannot be removed from here. Kids do not need accounts — they use the PIN screen.
+</p>

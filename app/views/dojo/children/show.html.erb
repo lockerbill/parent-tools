@@ -1,0 +1,67 @@
+<% page_title @child.name %>
+
+<div class="card flex items-center gap-4">
+  <%= render "shared/avatar", child: @child, size: :lg %>
+  <div class="min-w-0 flex-1">
+    <h1 class="truncate text-lg font-bold tracking-tight"><%= @child.name %></h1>
+    <%= render "dojo/children/balance", child: @child %>
+    <p class="text-xs text-slate-500">points</p>
+  </div>
+  <div class="flex flex-col gap-2">
+    <%= link_to "Award", new_dojo_point_event_path(child_id: @child.id), data: { turbo_frame: "modal" }, class: "btn-primary" %>
+    <%= link_to "Report", report_dojo_child_path(@child), class: "btn-secondary" %>
+  </div>
+</div>
+
+<section class="mt-6">
+  <h2 class="section-title">Rewards</h2>
+  <% if @rewards.empty? %>
+    <div class="card text-sm text-slate-500">No rewards yet. <%= link_to "Add one", new_dojo_reward_path, class: "font-medium underline" %>.</div>
+  <% else %>
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <% @rewards.each do |reward| %>
+        <% affordable = reward.affordable_for?(@child) %>
+        <%= button_to dojo_redemptions_path,
+              params: { child_id: @child.id, reward_id: reward.id },
+              disabled: !affordable,
+              form: { data: { turbo_confirm: "Redeem “#{reward.name}” for #{reward.cost} points?" } },
+              class: "flex h-24 w-full flex-col items-center justify-center gap-1 rounded-xl px-2 text-center ring-1 transition #{affordable ? "bg-white ring-slate-200 hover:bg-slate-50" : "bg-slate-50 text-slate-400 ring-slate-100"}" do %>
+          <span class="text-2xl" aria-hidden="true"><%= reward.icon %></span>
+          <span class="line-clamp-2 text-xs font-semibold leading-tight"><%= reward.name %></span>
+          <span class="text-xs font-bold tabular-nums"><%= reward.cost %> pts</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<% if @redemptions.any? %>
+  <section class="mt-6">
+    <h2 class="section-title">Recent redemptions</h2>
+    <ul class="card divide-y divide-slate-100 p-0">
+      <% @redemptions.each do |redemption| %>
+        <li class="flex items-center gap-3 px-4 py-3">
+          <span class="text-xl" aria-hidden="true"><%= redemption.reward.icon %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium"><%= redemption.reward.name %></p>
+            <p class="text-xs text-slate-500"><%= redemption.status.humanize %> · <%= friendly_time(redemption.created_at) %></p>
+          </div>
+          <span class="text-sm font-bold tabular-nums text-slate-500">−<%= redemption.cost %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<section class="mt-6">
+  <h2 class="section-title">Recent points</h2>
+  <%# Same id the dashboard uses, so awarding from here refreshes the feed too. %>
+  <div id="activity_feed">
+    <%= render "dojo/point_events/feed", events: @recent_events %>
+  </div>
+</section>
+
+<div class="mt-6 flex gap-2">
+  <%= link_to "Edit #{@child.name}", edit_dojo_child_path(@child), class: "btn-secondary" %>
+  <%= link_to "All children", dojo_children_path, class: "btn-ghost" %>
+</div>

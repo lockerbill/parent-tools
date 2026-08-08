@@ -1,0 +1,19 @@
+<% page_title "Choose a new password" %>
+
+<div class="mx-auto max-w-sm py-10">
+  <h1 class="mb-4 text-xl font-bold tracking-tight">Choose a new password</h1>
+
+  <%= form_with url: password_path(params[:token]), method: :patch, class: "card space-y-4" do |form| %>
+    <div>
+      <%= form.label :password, "New password", class: "label" %>
+      <%= form.password_field :password, required: true, autofocus: true, minlength: 10, autocomplete: "new-password", class: "field" %>
+    </div>
+
+    <div>
+      <%= form.label :password_confirmation, "Confirm new password", class: "label" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "field" %>
+    </div>
+
+    <%= form.submit "Save password", class: "btn-primary w-full" %>
+  <% end %>
+</div>

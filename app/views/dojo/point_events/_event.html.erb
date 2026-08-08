@@ -1,0 +1,31 @@
+<li id="<%= dom_id(event) %>" class="flex items-center gap-3 px-4 py-3 <%= "opacity-50" if event.reverted? %>">
+  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg ring-1 <%= chip_classes(event.color) %>" aria-hidden="true">
+    <%= event.icon %>
+  </span>
+
+  <div class="min-w-0 flex-1">
+    <p class="truncate text-sm">
+      <span class="font-semibold"><%= event.child.name %></span>
+      <span class="text-slate-600"><%= event.label %></span>
+    </p>
+    <p class="truncate text-xs text-slate-500">
+      <%= friendly_time(event.occurred_at) %>
+      <% if event.user %>· <%= event.user.name %><% end %>
+      <% if event.clamped? %>· capped at zero (asked for <%= signed_points(event.requested_points) %>)<% end %>
+      <% if event.reverted? %>· undone<% end %>
+    </p>
+    <% if event.note.present? %>
+      <p class="mt-0.5 truncate text-xs italic text-slate-500"><%= event.note %></p>
+    <% end %>
+  </div>
+
+  <span class="text-base font-bold tabular-nums <%= event.positive? ? "text-emerald-600" : "text-rose-600" %> <%= "line-through" if event.reverted? %>">
+    <%= event.signed_points %>
+  </span>
+
+  <% if event.undoable? %>
+    <%= button_to "Undo", revert_dojo_point_event_path(event),
+          class: "rounded-lg px-2 py-1 text-xs font-medium text-slate-400 hover:bg-slate-100 hover:text-slate-700",
+          form_class: "shrink-0" %>
+  <% end %>
+</li>

@@ -1,0 +1,58 @@
+<% page_title "Set up HomeDojo" %>
+
+<div class="mx-auto max-w-md py-8">
+  <div class="mb-6 text-center">
+    <div class="text-5xl" aria-hidden="true">🥋</div>
+    <h1 class="mt-3 text-2xl font-bold tracking-tight">Welcome to HomeDojo</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Everything stays on this machine. Create your family and the first parent account to begin.
+    </p>
+  </div>
+
+  <%= form_with url: setup_path, method: :post, class: "card space-y-5" do |form| %>
+    <% if @family.errors.any? || @user.errors.any? %>
+      <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+        <ul class="list-inside list-disc space-y-1">
+          <% (@family.errors.full_messages + @user.errors.full_messages).each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= label_tag "family[name]", "Family name", class: "label" %>
+      <%= text_field_tag "family[name]", @family.name, class: "field", required: true, autofocus: true, placeholder: "The Lockers" %>
+    </div>
+
+    <hr class="border-slate-200">
+
+    <div>
+      <%= label_tag "user[name]", "Your name", class: "label" %>
+      <%= text_field_tag "user[name]", @user.name, class: "field", required: true, autocomplete: "name" %>
+    </div>
+
+    <div>
+      <%= label_tag "user[email_address]", "Email address", class: "label" %>
+      <%= email_field_tag "user[email_address]", @user.email_address, class: "field", required: true, autocomplete: "username" %>
+      <p class="hint">Used to sign in. No email is ever sent unless you configure SMTP.</p>
+    </div>
+
+    <div>
+      <%= label_tag "user[password]", "Password", class: "label" %>
+      <%= password_field_tag "user[password]", nil, class: "field", required: true, minlength: 10, autocomplete: "new-password" %>
+      <p class="hint">At least 10 characters. This account owns the install — make it a strong one.</p>
+    </div>
+
+    <div>
+      <%= label_tag "user[password_confirmation]", "Confirm password", class: "label" %>
+      <%= password_field_tag "user[password_confirmation]", nil, class: "field", required: true, autocomplete: "new-password" %>
+    </div>
+
+    <%= submit_tag "Create my family", class: "btn-primary w-full" %>
+  <% end %>
+
+  <p class="mt-4 text-center text-xs text-slate-500">
+    A starter set of behaviours and rewards is added automatically. You can edit every one of them.
+  </p>
+</div>

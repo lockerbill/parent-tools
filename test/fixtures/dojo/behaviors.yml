@@ -1,0 +1,26 @@
+helping:
+  family: lockers
+  name: Helping at home
+  points: 2
+  category: positive
+  icon: 🧹
+  color: emerald
+  position: 1
+
+homework:
+  family: lockers
+  name: Homework done
+  points: 3
+  category: positive
+  icon: 📚
+  color: sky
+  position: 2
+
+teasing:
+  family: lockers
+  name: Teasing
+  points: -2
+  category: needs_work
+  icon: 😠
+  color: rose
+  position: 3

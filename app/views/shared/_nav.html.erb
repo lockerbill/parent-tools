@@ -1,0 +1,21 @@
+<header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+  <div class="mx-auto flex w-full max-w-3xl items-center gap-2 px-4 py-3">
+    <%= link_to root_path, class: "flex items-center gap-2 font-semibold tracking-tight" do %>
+      <span class="text-xl" aria-hidden="true">🥋</span>
+      <span><%= current_family&.name || "HomeDojo" %></span>
+    <% end %>
+
+    <div class="ml-auto flex items-center gap-1">
+      <%= link_to "Activity", dojo_point_events_path, class: "hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 sm:inline-block" %>
+      <%= link_to dojo_redemptions_path, class: "relative rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" do %>
+        Rewards
+        <% if defined?(pending_redemptions_count) && pending_redemptions_count.to_i.positive? %>
+          <span class="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-xs font-bold text-white">
+            <%= pending_redemptions_count %>
+          </span>
+        <% end %>
+      <% end %>
+      <%= link_to "Settings", dojo_settings_path, class: "rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" %>
+    </div>
+  </div>
+</header>

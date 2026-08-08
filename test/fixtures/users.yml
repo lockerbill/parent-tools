@@ -1,0 +1,13 @@
+owner:
+  family: lockers
+  name: Bill
+  email_address: bill@example.com
+  password_digest: <%= BCrypt::Password.create("supersecret123", cost: 4) %>
+  role: owner
+
+parent:
+  family: lockers
+  name: Sam
+  email_address: sam@example.com
+  password_digest: <%= BCrypt::Password.create("supersecret123", cost: 4) %>
+  role: parent

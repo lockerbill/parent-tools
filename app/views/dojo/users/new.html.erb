@@ -1,0 +1,39 @@
+<% page_title "Add a parent" %>
+
+<h1 class="mb-4 text-lg font-bold tracking-tight">Add a parent</h1>
+
+<%= form_with model: @user, scope: :user, url: dojo_users_path, class: "card space-y-5" do |form| %>
+  <% if @user.errors.any? %>
+    <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+      <ul class="list-inside list-disc space-y-1">
+        <% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, class: "field", required: true, autofocus: true %>
+  </div>
+
+  <div>
+    <%= form.label :email_address, "Email address", class: "label" %>
+    <%= form.email_field :email_address, class: "field", required: true, autocomplete: "off" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :password, class: "label" %>
+      <%= form.password_field :password, class: "field", required: true, minlength: 10, autocomplete: "new-password" %>
+    </div>
+    <div>
+      <%= form.label :password_confirmation, "Confirm", class: "label" %>
+      <%= form.password_field :password_confirmation, class: "field", required: true, autocomplete: "new-password" %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= form.submit "Create account", class: "btn-primary" %>
+    <%= link_to "Cancel", dojo_users_path, class: "btn-secondary" %>
+  </div>
+<% end %>

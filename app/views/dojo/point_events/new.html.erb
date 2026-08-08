@@ -1,0 +1,74 @@
+<%
+  child_ids = @selected_children.map(&:id)
+  names = @selected_children.map(&:name).to_sentence
+%>
+<%# Tells the layout not to emit a second, empty turbo-frame with the same id. %>
+<% content_for :modal, true %>
+<%= render layout: "shared/modal", locals: { title: names.presence || "Award points" } do %>
+  <% if @selected_children.empty? %>
+    <p class="py-6 text-center text-sm text-slate-500">Pick at least one child first.</p>
+  <% else %>
+    <div data-controller="tabs" data-tabs-active-class="bg-white shadow-sm text-slate-900">
+      <div role="tablist" class="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1">
+        <button type="button" role="tab" aria-controls="behaviors-positive"
+                data-tabs-target="tab" data-tabs-name-param="positive" data-action="tabs#select"
+                class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500">
+          Positive
+        </button>
+        <button type="button" role="tab" aria-controls="behaviors-needs_work"
+                data-tabs-target="tab" data-tabs-name-param="needs_work" data-action="tabs#select"
+                class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500">
+          Needs work
+        </button>
+      </div>
+
+      <% Dojo::Behavior::CATEGORIES.each do |category| %>
+        <div role="tabpanel" id="behaviors-<%= category %>"
+             data-tabs-target="panel" data-tabs-name="<%= category %>" class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <% behaviors = @behaviors.select { |behavior| behavior.category == category } %>
+          <% if behaviors.empty? %>
+            <p class="col-span-full py-6 text-center text-sm text-slate-500">
+              No behaviours here yet. <%= link_to "Add one", new_dojo_behavior_path(category: category), class: "font-medium underline", data: { turbo_frame: "_top" } %>.
+            </p>
+          <% end %>
+          <% behaviors.each do |behavior| %>
+            <%= button_to dojo_point_events_path,
+                  params: { behavior_id: behavior.id, child_ids: child_ids },
+                  class: "flex h-24 w-full flex-col items-center justify-center gap-1 rounded-xl px-2 text-center ring-1 transition active:scale-95 #{chip_classes(behavior.color)}" do %>
+              <span class="text-2xl" aria-hidden="true"><%= behavior.icon %></span>
+              <span class="line-clamp-2 text-xs font-semibold leading-tight"><%= behavior.name %></span>
+              <span class="text-xs font-bold tabular-nums"><%= behavior.signed_points %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <details class="mt-4 rounded-xl bg-slate-50 p-3">
+      <summary class="cursor-pointer text-sm font-medium text-slate-600">Something else…</summary>
+
+      <%= form_with url: dojo_point_events_path, class: "mt-3 space-y-3" do |form| %>
+        <% child_ids.each do |id| %>
+          <%= hidden_field_tag "child_ids[]", id, id: nil %>
+        <% end %>
+
+        <div>
+          <%= label_tag :label, "What happened", class: "label" %>
+          <%= text_field_tag :label, nil, class: "field", required: true, placeholder: "Tidied the whole lounge" %>
+        </div>
+
+        <div>
+          <%= label_tag :points, "Points (use a minus for a deduction)", class: "label" %>
+          <%= number_field_tag :points, 1, class: "field", required: true, min: -100, max: 100, step: 1 %>
+        </div>
+
+        <div>
+          <%= label_tag :note, "Note (optional)", class: "label" %>
+          <%= text_field_tag :note, nil, class: "field" %>
+        </div>
+
+        <%= form.submit "Award", class: "btn-primary w-full" %>
+      <% end %>
+    </details>
+  <% end %>
+<% end %>

@@ -1,0 +1,25 @@
+<% page_title "Activity" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-lg font-bold tracking-tight">Activity</h1>
+  <%= link_to "Dashboard", dojo_dashboard_path, class: "btn-secondary" %>
+</div>
+
+<div class="mb-4 flex flex-wrap gap-2">
+  <%= link_to "Everyone", dojo_point_events_path,
+        class: "rounded-lg px-3 py-1.5 text-sm font-medium ring-1 #{params[:child_id].blank? ? "bg-slate-900 text-white ring-slate-900" : "bg-white text-slate-600 ring-slate-200"}" %>
+  <% @children.each do |child| %>
+    <%= link_to child.name, dojo_point_events_path(child_id: child.id),
+          class: "rounded-lg px-3 py-1.5 text-sm font-medium ring-1 #{params[:child_id].to_i == child.id ? "bg-slate-900 text-white ring-slate-900" : "bg-white text-slate-600 ring-slate-200"}" %>
+  <% end %>
+</div>
+
+<div id="activity_feed">
+  <%= render "dojo/point_events/feed", events: @events %>
+</div>
+
+<% if @more %>
+  <div class="mt-4 text-center">
+    <%= link_to "Load older", dojo_point_events_path(child_id: params[:child_id], before: @events.last.id), class: "btn-secondary" %>
+  </div>
+<% end %>

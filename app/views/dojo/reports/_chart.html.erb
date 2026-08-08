@@ -1,0 +1,27 @@
+<%# A dependency-free chart: one column per day, bars growing out of a zero line.
+    No CDN, no JavaScript charting library, works offline on the LAN. %>
+<div class="card">
+  <div class="flex h-40 items-stretch gap-px">
+    <% report.daily_series.each do |date, net| %>
+      <div class="group relative flex flex-1 flex-col justify-center" title="<%= date.strftime("%a %-d %b") %>: <%= signed_points(net) %>">
+        <div class="flex h-1/2 flex-col justify-end">
+          <% if net.positive? %>
+            <div class="w-full rounded-t bg-emerald-500" style="height: <%= (net.abs * 100.0 / report.max_abs_daily).round(1) %>%"></div>
+          <% end %>
+        </div>
+        <div class="h-px w-full bg-slate-200"></div>
+        <div class="flex h-1/2 flex-col justify-start">
+          <% if net.negative? %>
+            <div class="w-full rounded-b bg-rose-500" style="height: <%= (net.abs * 100.0 / report.max_abs_daily).round(1) %>%"></div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-2 flex justify-between text-xs text-slate-400">
+    <span><%= report.daily_series.first.first.strftime("%-d %b") %></span>
+    <span>peak <%= report.max_abs_daily %> pts/day</span>
+    <span><%= report.daily_series.last.first.strftime("%-d %b") %></span>
+  </div>
+</div>

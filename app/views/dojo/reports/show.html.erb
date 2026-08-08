@@ -1,0 +1,79 @@
+<% page_title "#{@child.name}'s report" %>
+
+<div class="mb-4 flex items-center gap-3">
+  <%= render "shared/avatar", child: @child, size: :md %>
+  <div class="min-w-0 flex-1">
+    <h1 class="truncate text-lg font-bold tracking-tight"><%= @child.name %></h1>
+    <p class="text-xs text-slate-500">Last <%= @report.days %> days</p>
+  </div>
+  <%= link_to "Back", dojo_child_path(@child), class: "btn-secondary" %>
+</div>
+
+<div class="grid grid-cols-3 gap-3">
+  <div class="card text-center">
+    <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Balance</p>
+    <p class="mt-1 text-2xl font-black tabular-nums"><%= @report.balance %></p>
+  </div>
+  <div class="card text-center">
+    <p class="text-xs font-medium uppercase tracking-wide text-slate-500">This week</p>
+    <p class="mt-1 text-2xl font-black tabular-nums <%= points_text_classes(@report.this_week_net) %>">
+      <%= signed_points(@report.this_week_net) %>
+    </p>
+    <p class="text-xs text-slate-500">
+      <% if @report.week_delta.zero? %>
+        same as last week
+      <% else %>
+        <%= signed_points(@report.week_delta) %> vs last week
+      <% end %>
+    </p>
+  </div>
+  <div class="card text-center">
+    <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Positive</p>
+    <p class="mt-1 text-2xl font-black tabular-nums">
+      <%= @report.positive_ratio ? "#{@report.positive_ratio}%" : "—" %>
+    </p>
+    <p class="text-xs text-slate-500"><%= @report.positive_count %> up · <%= @report.needs_work_count %> down</p>
+  </div>
+</div>
+
+<section class="mt-6">
+  <h2 class="section-title">Daily net points</h2>
+  <%= render "chart", report: @report %>
+</section>
+
+<section class="mt-6">
+  <h2 class="section-title">By behaviour</h2>
+  <% if @report.breakdown.empty? %>
+    <div class="card text-sm text-slate-500">No points in this window yet.</div>
+  <% else %>
+    <ul class="card divide-y divide-slate-100 p-0">
+      <% @report.breakdown.each do |row| %>
+        <li class="flex items-center gap-3 px-4 py-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg ring-1 <%= chip_classes(row[:color]) %>" aria-hidden="true">
+            <%= row[:icon] %>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium"><%= row[:label] %></p>
+            <p class="text-xs text-slate-500"><%= pluralize row[:count], "time" %></p>
+          </div>
+          <span class="text-sm font-bold tabular-nums <%= points_text_classes(row[:points]) %>"><%= signed_points(row[:points]) %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
+
+<% if @report.redemptions.any? %>
+  <section class="mt-6">
+    <h2 class="section-title">Spent on rewards (<%= @report.points_spent %> points)</h2>
+    <ul class="card divide-y divide-slate-100 p-0">
+      <% @report.redemptions.each do |redemption| %>
+        <li class="flex items-center gap-3 px-4 py-3">
+          <span class="text-xl" aria-hidden="true"><%= redemption.reward.icon %></span>
+          <p class="min-w-0 flex-1 truncate text-sm font-medium"><%= redemption.reward.name %></p>
+          <span class="text-sm font-bold tabular-nums text-slate-500">−<%= redemption.cost %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

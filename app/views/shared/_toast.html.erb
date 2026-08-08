@@ -1,0 +1,7 @@
+<div data-controller="toast"
+     data-toast-timeout-value="<%= local_assigns.fetch(:timeout, 5000) %>"
+     class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-lg ring-1 <%= type.to_s == "alert" ? "bg-rose-600 text-white ring-rose-700" : "bg-slate-900 text-white ring-slate-800" %>">
+  <span class="flex-1"><%= message %></span>
+  <%= local_assigns[:action] %>
+  <button type="button" data-action="toast#dismiss" class="rounded-lg px-2 py-1 text-white/70 hover:text-white" aria-label="Dismiss">✕</button>
+</div>

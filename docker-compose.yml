@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    # Or pull a published image instead of building:
+    # image: ghcr.io/lockerbill/homedojo:latest
+    restart: unless-stopped
+    ports:
+      - "3000:80"            # Thruster listens on 80 inside the container
+    environment:
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?run `openssl rand -hex 64` and put it in .env}
+      TZ: ${TZ:-Australia/Perth}
+      APP_HOST: ${APP_HOST:-localhost:3000}
+      # Uncomment once you are behind a TLS-terminating reverse proxy:
+      # FORCE_SSL: "1"
+      # Restrict which hostnames may reach the app (comma separated):
+      # APP_HOSTS: homedojo.lan,homedojo.tail1234.ts.net
+      SOLID_QUEUE_IN_PUMA: "1"
+      # Optional email. Leave unset and HomeDojo never talks to the outside world.
+      # SMTP_ADDRESS: smtp.example.com
+      # SMTP_PORT: "587"
+      # SMTP_USER_NAME: homedojo@example.com
+      # SMTP_PASSWORD: changeme
+      # MAIL_FROM: homedojo@example.com
+    volumes:
+      - homedojo_storage:/rails/storage
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/up" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  homedojo_storage:

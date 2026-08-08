@@ -1,0 +1,30 @@
+<% page_title "Behaviours" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-lg font-bold tracking-tight">Behaviours</h1>
+  <%= link_to "Add", new_dojo_behavior_path, class: "btn-primary" %>
+</div>
+
+<p class="mb-4 text-sm text-slate-600">
+  Drag to reorder — the order here is the order in the picker sheet.
+</p>
+
+<h2 class="section-title">Positive</h2>
+<%= render "list", behaviors: @positive, category: "positive" %>
+
+<h2 class="section-title mt-8">Needs work</h2>
+<%= render "list", behaviors: @needs_work, category: "needs_work" %>
+
+<% if @archived.any? %>
+  <h2 class="section-title mt-8">Archived</h2>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <% @archived.each do |behavior| %>
+      <li class="flex items-center gap-3 px-4 py-3 opacity-70">
+        <span class="text-xl" aria-hidden="true"><%= behavior.icon %></span>
+        <p class="flex-1 truncate text-sm font-medium"><%= behavior.name %></p>
+        <span class="text-sm font-bold tabular-nums <%= points_text_classes(behavior.points) %>"><%= behavior.signed_points %></span>
+        <%= button_to "Restore", restore_dojo_behavior_path(behavior), class: "btn-secondary px-3 py-1.5" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

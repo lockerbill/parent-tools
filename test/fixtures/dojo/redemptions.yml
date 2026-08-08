@@ -1,0 +1,5 @@
+ada_requested:
+  child: ada
+  reward: screen_time
+  cost: 5
+  status: requested

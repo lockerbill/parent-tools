@@ -1,0 +1,9 @@
+<% if events.empty? %>
+  <div class="card text-center text-sm text-slate-500">
+    Nothing yet. Tap a child above to award your first points.
+  </div>
+<% else %>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <%= render partial: "dojo/point_events/event", collection: events, as: :event %>
+  </ul>
+<% end %>

@@ -1,0 +1,51 @@
+<% page_title "Rewards" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-lg font-bold tracking-tight">Rewards</h1>
+  <div class="flex gap-2">
+    <%= link_to "Requests", dojo_redemptions_path, class: "btn-secondary" %>
+    <%= link_to "Add", new_dojo_reward_path, class: "btn-primary" %>
+  </div>
+</div>
+
+<% if @rewards.empty? %>
+  <div class="card text-sm text-slate-500">No rewards yet.</div>
+<% else %>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <% @rewards.each do |reward| %>
+      <li class="flex items-center gap-3 px-4 py-3">
+        <span class="text-xl" aria-hidden="true"><%= reward.icon %></span>
+        <p class="min-w-0 flex-1 truncate text-sm font-medium"><%= reward.name %></p>
+        <span class="text-sm font-bold tabular-nums text-slate-500"><%= reward.cost %> pts</span>
+        <%= link_to "Edit", edit_dojo_reward_path(reward), class: "btn-ghost" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if @children.any? && @rewards.any? %>
+  <h2 class="section-title mt-8">Redeem for a child</h2>
+  <div class="card space-y-2">
+    <% @children.each do |child| %>
+      <div class="flex items-center gap-3">
+        <%= render "shared/avatar", child: child, size: :sm %>
+        <p class="min-w-0 flex-1 truncate text-sm font-medium"><%= child.name %></p>
+        <span class="text-sm tabular-nums text-slate-500"><%= child.points_balance %> pts</span>
+        <%= link_to "Choose", dojo_child_path(child), class: "btn-secondary px-3 py-1.5" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @archived.any? %>
+  <h2 class="section-title mt-8">Archived</h2>
+  <ul class="card divide-y divide-slate-100 p-0">
+    <% @archived.each do |reward| %>
+      <li class="flex items-center gap-3 px-4 py-3 opacity-70">
+        <span class="text-xl" aria-hidden="true"><%= reward.icon %></span>
+        <p class="flex-1 truncate text-sm font-medium"><%= reward.name %></p>
+        <%= button_to "Restore", restore_dojo_reward_path(reward), class: "btn-secondary px-3 py-1.5" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

@@ -1,0 +1,67 @@
+<% page_title "Settings" %>
+
+<h1 class="mb-4 text-lg font-bold tracking-tight">Settings</h1>
+
+<%= form_with url: dojo_settings_path, method: :patch, scope: :family, class: "card space-y-5" do |form| %>
+  <div>
+    <%= form.label :name, "Family name", class: "label" %>
+    <%= form.text_field :name, value: @family.name, class: "field", required: true %>
+  </div>
+
+  <div>
+    <%= form.label :week_start_day, "Weeks start on", class: "label" %>
+    <%= form.select :week_start_day,
+          options_for_select([ [ "Monday", "monday" ], [ "Sunday", "sunday" ] ], @family.week_start_day.to_s),
+          {}, class: "field" %>
+  </div>
+
+  <label class="flex items-start gap-3">
+    <%= form.check_box :allow_negative_balance, { checked: @family.allow_negative_balance?, class: "mt-1 rounded border-slate-300" }, "1", "0" %>
+    <span>
+      <span class="block text-sm font-medium">Allow negative balances</span>
+      <span class="block text-xs text-slate-500">Off by default: a deduction can only take away points a child actually has.</span>
+    </span>
+  </label>
+
+  <label class="flex items-start gap-3">
+    <%= form.check_box :kid_view_enabled, { checked: @family.kid_view_enabled?, class: "mt-1 rounded border-slate-300" }, "1", "0" %>
+    <span>
+      <span class="block text-sm font-medium">Kid view</span>
+      <span class="block text-xs text-slate-500">A read-only screen at <code class="rounded bg-slate-100 px-1"><%= kids_root_url %></code> for the family tablet.</span>
+    </span>
+  </label>
+
+  <label class="flex items-start gap-3">
+    <%= form.check_box :kid_requests_enabled, { checked: @family.kid_requests_enabled?, class: "mt-1 rounded border-slate-300" }, "1", "0" %>
+    <span>
+      <span class="block text-sm font-medium">Let kids request rewards</span>
+      <span class="block text-xs text-slate-500">Requests wait for a parent to approve. Points only move on approval.</span>
+    </span>
+  </label>
+
+  <%= form.submit "Save settings", class: "btn-primary" %>
+<% end %>
+
+<h2 class="section-title mt-8">Kid PINs</h2>
+<ul class="card divide-y divide-slate-100 p-0">
+  <% @children.select { |child| !child.archived? }.each do |child| %>
+    <li class="flex items-center gap-3 px-4 py-3">
+      <%= render "shared/avatar", child: child, size: :sm %>
+      <p class="min-w-0 flex-1 truncate text-sm font-medium"><%= child.name %></p>
+      <span class="text-xs <%= child.pin? ? "text-emerald-600" : "text-slate-400" %>">
+        <%= child.pin? ? "PIN set" : "no PIN — opens straight away" %>
+      </span>
+      <%= link_to "Change", edit_dojo_child_path(child), class: "btn-ghost" %>
+    </li>
+  <% end %>
+</ul>
+
+<h2 class="section-title mt-8">Everything else</h2>
+<div class="card grid gap-2 sm:grid-cols-2">
+  <%= link_to "Behaviours", dojo_behaviors_path, class: "btn-secondary" %>
+  <%= link_to "Rewards", dojo_rewards_path, class: "btn-secondary" %>
+  <%= link_to "Children", dojo_children_path, class: "btn-secondary" %>
+  <%= link_to "Parent accounts", dojo_users_path, class: "btn-secondary" %>
+  <%= link_to "Activity log", dojo_point_events_path, class: "btn-secondary" %>
+  <%= button_to "Sign out", session_path, method: :delete, class: "btn-danger w-full" %>
+</div>

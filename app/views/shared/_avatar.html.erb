@@ -1,0 +1,13 @@
+<%
+  size = local_assigns.fetch(:size, :md)
+  dimensions = { sm: "h-9 w-9 text-sm", md: "h-14 w-14 text-lg", lg: "h-20 w-20 text-2xl", xl: "h-28 w-28 text-4xl" }.fetch(size)
+%>
+<span class="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold text-white <%= dimensions %> <%= avatar_bg_classes(child.color) %>">
+  <% if child.avatar.attached? %>
+    <%= image_tag child.avatar.variant(resize_to_fill: [ 240, 240 ]), class: "h-full w-full object-cover", alt: child.name %>
+  <% elsif child.emoji.present? %>
+    <span aria-hidden="true"><%= child.emoji %></span>
+  <% else %>
+    <%= child.initials %>
+  <% end %>
+</span>

@@ -1,0 +1,22 @@
+<% page_title "Reset password" %>
+
+<div class="mx-auto max-w-sm py-10">
+  <h1 class="mb-4 text-xl font-bold tracking-tight">Reset your password</h1>
+
+  <%= form_with url: passwords_path, class: "card space-y-4" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email address", class: "label" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "field" %>
+      <p class="hint">
+        This only works if SMTP is configured. Otherwise reset from the host with
+        <code class="rounded bg-slate-100 px-1">bin/rails homedojo:reset_password</code>.
+      </p>
+    </div>
+
+    <%= form.submit "Email reset instructions", class: "btn-primary w-full" %>
+  <% end %>
+
+  <p class="mt-4 text-center text-sm">
+    <%= link_to "Back to sign in", new_session_path, class: "text-slate-500 hover:text-slate-900" %>
+  </p>
+</div>

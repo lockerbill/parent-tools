@@ -1,0 +1,26 @@
+<%# Close the picker sheet, refresh the balances and the feed, and offer an undo. %>
+<%= turbo_stream.update "modal", "" %>
+
+<%= turbo_stream.update "children" do %>
+  <%= render partial: "dojo/dashboard/child_card", collection: @children, as: :child %>
+<% end %>
+
+<%= turbo_stream.update "activity_feed" do %>
+  <%= render "dojo/point_events/feed", events: @recent_events %>
+<% end %>
+
+<% @selected_children.each do |child| %>
+  <%= turbo_stream.replace dom_id(child, :balance) do %>
+    <%= render "dojo/children/balance", child: child.reload %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.append "toasts" do %>
+  <%= render "shared/toast",
+        type: :notice,
+        timeout: 8000,
+        message: "#{@events.first.label} #{signed_points(@events.first.points)} · #{@selected_children.map(&:name).to_sentence}",
+        action: button_to("Undo", revert_dojo_point_event_path(@events.first),
+                          class: "rounded-lg bg-white/15 px-3 py-1 text-xs font-semibold text-white hover:bg-white/25",
+                          form_class: "shrink-0", params: { revert_group: @events.map(&:id) }) %>
+<% end %>

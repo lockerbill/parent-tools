@@ -1,0 +1,16 @@
+<h1><%= @family.name %> — this week</h1>
+
+<% @reports.each do |report| %>
+  <h2><%= report.child.name %> — <%= report.balance %> points</h2>
+  <p>
+    <%= report.this_week_net.positive? ? "+" : "" %><%= report.this_week_net %> this week
+    (last week <%= report.last_week_net.positive? ? "+" : "" %><%= report.last_week_net %>).
+  </p>
+  <% if report.breakdown.any? %>
+    <ul>
+      <% report.breakdown.first(5).each do |row| %>
+        <li><%= row[:label] %> — <%= row[:count] %>× (<%= row[:points].positive? ? "+" : "" %><%= row[:points] %>)</li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

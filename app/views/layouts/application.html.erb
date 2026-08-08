@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "HomeDojo" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-slate-50 text-slate-900 antialiased">
+    <% if authenticated? %>
+      <%= render "shared/nav" %>
+    <% end %>
+
+    <main class="mx-auto w-full max-w-3xl px-4 pb-28 pt-4 sm:pt-6">
+      <%= yield %>
+    </main>
+
+    <%= render "shared/flash" %>
+    <%# The picker sheet renders its own frame; only emit the empty one otherwise. %>
+    <% unless content_for?(:modal) %><turbo-frame id="modal"></turbo-frame><% end %>
+  </body>
+</html>

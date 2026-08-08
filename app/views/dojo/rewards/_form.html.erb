@@ -1,0 +1,39 @@
+<%= form_with model: reward, scope: :reward, class: "card space-y-5",
+      url: reward.new_record? ? dojo_rewards_path : dojo_reward_path(reward) do |form| %>
+  <% if reward.errors.any? %>
+    <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+      <ul class="list-inside list-disc space-y-1">
+        <% reward.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, "Reward", class: "label" %>
+    <%= form.text_field :name, class: "field", required: true, autofocus: reward.new_record?, placeholder: "30 min extra screen time" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :cost, "Cost in points", class: "label" %>
+      <%= form.number_field :cost, class: "field", required: true, min: 1, max: 10000, step: 1 %>
+    </div>
+    <div>
+      <%= form.label :icon, "Emoji", class: "label" %>
+      <%= form.text_field :icon, class: "field", maxlength: 8, required: true %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= form.submit class: "btn-primary" %>
+    <%= link_to "Cancel", dojo_rewards_path, class: "btn-secondary" %>
+  </div>
+<% end %>
+
+<%# Archive lives outside the form: a button_to is itself a form. %>
+<% unless reward.new_record? || reward.archived? %>
+  <div class="mt-3 flex justify-end">
+    <%= button_to "Archive", dojo_reward_path(reward), method: :delete, class: "btn-danger",
+          form: { data: { turbo_confirm: "Archive “#{reward.name}”?" } } %>
+  </div>
+<% end %>
