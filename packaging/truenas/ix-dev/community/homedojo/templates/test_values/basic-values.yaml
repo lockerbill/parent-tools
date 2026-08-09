@@ -1,0 +1,36 @@
+resources:
+  limits:
+    cpus: 1.0
+    memory: 512
+
+TZ: Etc/UTC
+
+homedojo:
+  app_host: ""
+  app_hosts: ""
+  force_ssl: false
+  smtp_enabled: false
+  smtp_address: ""
+  smtp_port: 587
+  smtp_user_name: ""
+  smtp_password: ""
+  smtp_starttls: true
+  mail_from: ""
+  additional_envs: []
+
+network:
+  host_network: false
+  web_port:
+    bind_mode: published
+    port_number: 31080
+
+ix_volumes:
+  data: /opt/tests/mnt/homedojo/data
+
+storage:
+  data:
+    type: ix_volume
+    ix_volume_config:
+      dataset_name: data
+      create_host_path: true
+  additional_storage: []

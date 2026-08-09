@@ -1,0 +1,37 @@
+annotations:
+  min_scale_version: 24.10.2.2
+app_version: 1.0.0
+capabilities: []
+categories:
+  - productivity
+changelog_url: https://github.com/lockerbill/parent-tools/releases
+date_added: '2026-08-08'
+description: Self-hosted family behaviour points and rewards for parents and children.
+home: https://github.com/lockerbill/parent-tools
+host_mounts: []
+icon: https://raw.githubusercontent.com/lockerbill/parent-tools/main/public/icon.png
+keywords:
+  - family
+  - parenting
+  - rewards
+  - self-hosted
+lib_version: 2.3.8
+lib_version_hash: cd75c897a1e8fef54b5bd00d0d8849f240bc50db2ef650eccc0ee74f3b2b2dc1
+maintainers:
+  - email: dev@truenas.com
+    name: truenas
+    url: https://www.truenas.com/
+name: homedojo
+run_as_context:
+  - description: Container [homedojo] runs as a fixed non-root user and group.
+    gid: 1000
+    group_name: Host group is [unknown (1000)]
+    uid: 1000
+    user_name: Host user is [unknown (1000)]
+screenshots: []
+sources:
+  - https://github.com/lockerbill/parent-tools
+  - https://github.com/lockerbill/parent-tools/pkgs/container/homedojo
+title: HomeDojo
+train: community
+version: 1.0.0

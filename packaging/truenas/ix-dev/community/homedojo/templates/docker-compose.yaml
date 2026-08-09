@@ -1,0 +1,51 @@
+{% set tpl = ix_lib.base.render.Render(values) %}
+
+{% set app = tpl.add_container(values.consts.app_container_name, "image") %}
+{% set perms = tpl.deps.perms(values.consts.perms_container_name) %}
+{% set perms_config = {"uid": values.consts.run_as_user, "gid": values.consts.run_as_group, "mode": "check"} %}
+
+{% do app.set_user(values.consts.run_as_user, values.consts.run_as_group) %}
+{% do app.healthcheck.set_test("curl", {"port": values.consts.internal_web_port, "path": "/up"}) %}
+
+{% do app.environment.add_env("SOLID_QUEUE_IN_PUMA", "1") %}
+
+{% if values.homedojo.app_host %}
+  {% do app.environment.add_env("APP_HOST", values.homedojo.app_host) %}
+{% endif %}
+{% if values.homedojo.app_hosts %}
+  {% do app.environment.add_env("APP_HOSTS", values.homedojo.app_hosts) %}
+{% endif %}
+{% if values.homedojo.force_ssl %}
+  {% do app.environment.add_env("FORCE_SSL", "1") %}
+{% endif %}
+
+{% if values.homedojo.smtp_enabled %}
+  {% do app.environment.add_env("SMTP_ADDRESS", values.homedojo.smtp_address) %}
+  {% do app.environment.add_env("SMTP_PORT", values.homedojo.smtp_port) %}
+  {% do app.environment.add_env("SMTP_USER_NAME", values.homedojo.smtp_user_name) %}
+  {% do app.environment.add_env("SMTP_PASSWORD", values.homedojo.smtp_password) %}
+  {% do app.environment.add_env("SMTP_STARTTLS", values.homedojo.smtp_starttls) %}
+  {% do app.environment.add_env("MAIL_FROM", values.homedojo.mail_from) %}
+{% endif %}
+
+{% do app.environment.add_user_envs(values.homedojo.additional_envs) %}
+{% do app.add_port(values.network.web_port, {"container_port": values.consts.internal_web_port}) %}
+
+{% do app.add_storage(values.consts.storage_path, values.storage.data) %}
+{% do perms.add_or_skip_action("data", values.storage.data, perms_config) %}
+
+{% for store in values.storage.additional_storage %}
+  {% do app.add_storage(store.mount_path, store) %}
+  {% do perms.add_or_skip_action(store.mount_path, store, perms_config) %}
+{% endfor %}
+
+{% if perms.has_actions() %}
+  {% do perms.activate() %}
+  {% do app.depends.add_dependency(values.consts.perms_container_name, "service_completed_successfully") %}
+{% endif %}
+
+{% do tpl.portals.add(values.network.web_port, {"scheme": "http"}) %}
+{% do tpl.notes.add_info("Open the Web UI to complete HomeDojo's first-run family setup.") %}
+{% do tpl.notes.add_info("Back up all of /rails/storage; it contains SQLite databases, uploads, and the Rails signing key.") %}
+
+{{ tpl.render() | tojson }}

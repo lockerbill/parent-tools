@@ -45,6 +45,7 @@ class AwardingPointsTest < ApplicationSystemTestCase
 
     assert_text "Homework done"
     click_on "Homework done"
+    assert_text "Homework done +3 · Ada and Bo"
 
     assert_equal 13, @ada.reload.points_balance
     assert_equal 3, @bo.reload.points_balance

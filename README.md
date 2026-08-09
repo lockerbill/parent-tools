@@ -16,17 +16,26 @@ screen time) can be added later alongside the `Dojo::` module.
 ## Quick start (Docker)
 
 ```bash
-git clone <this repo> homedojo && cd homedojo
+git clone https://github.com/lockerbill/parent-tools.git homedojo && cd homedojo
 cp .env.example .env
-openssl rand -hex 64            # paste into SECRET_KEY_BASE in .env
-docker compose up -d --build
+docker compose up -d
 ```
 
 Open `http://<your-host>:3000`. The first-boot wizard asks for your family name
 and creates the owner account, then seeds a starter set of behaviours and
 rewards. Migrations run automatically on container start.
 
-Upgrades are `docker compose pull && docker compose up -d` (or `--build`).
+Upgrades are `docker compose pull && docker compose up -d`.
+HomeDojo creates its Rails signing key inside the persistent storage volume on
+first boot, so there is no secret-generation step for a normal installation.
+
+### TrueNAS
+
+Release images are published for amd64 and arm64 at
+`ghcr.io/lockerbill/homedojo`. TrueNAS packaging is under
+[`packaging/truenas`](packaging/truenas/README.md): it includes a Custom App YAML
+for immediate testing and the source definition for an official community
+catalog contribution.
 
 ### Reverse proxy / remote access
 
@@ -58,8 +67,8 @@ bin/dev                         # Rails + Tailwind watcher on :3000
 The demo family signs in as `parent@example.com` / `homedojo123`, with kid PINs
 `1234` (Ada) and `2345` (Bo).
 
-Once `bundle install` has produced a `Gemfile.lock`, you can flip
-`BUNDLE_DEPLOYMENT` back to `"1"` in the `Dockerfile` for reproducible builds.
+The committed `Gemfile.lock` and `BUNDLE_DEPLOYMENT=1` keep production image
+dependencies reproducible.
 
 ---
 
@@ -121,7 +130,7 @@ Everything is environment variables — see `.env.example`.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `SECRET_KEY_BASE` | — | **Required.** `openssl rand -hex 64` |
+| `SECRET_KEY_BASE` | generated once | Optional override for the persisted Rails signing key |
 | `TZ` | `UTC` | Groups days and weeks in reports |
 | `APP_HOST` | `localhost:3000` | Host used in emailed links |
 | `FORCE_SSL` | off | Set to `1` behind a TLS proxy |
@@ -156,7 +165,8 @@ production:
 ## Backups
 
 The entire state is one directory: `/rails/storage` (the `homedojo_storage`
-volume). It holds the SQLite databases and every uploaded avatar.
+volume). It holds the SQLite databases, every uploaded avatar, and the hidden
+`.secret_key_base` file used to keep sessions valid across upgrades and restores.
 
 ```bash
 # consistent hot backup into storage/backups/<timestamp>

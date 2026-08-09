@@ -3,7 +3,7 @@
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t homedojo .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name homedojo homedojo
+# docker run -d -p 3000:80 -v homedojo_storage:/rails/storage --name homedojo homedojo
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -20,10 +20,8 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
-# BUNDLE_DEPLOYMENT is 0 so the image builds before a Gemfile.lock is committed.
-# Once you have run `bundle install` once and committed the lockfile, set it to 1.
 ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="0" \
+    BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
@@ -55,6 +53,13 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
+
+ARG APP_VERSION=dev
+LABEL org.opencontainers.image.title="HomeDojo" \
+      org.opencontainers.image.description="Self-hosted family behaviour points and rewards" \
+      org.opencontainers.image.source="https://github.com/lockerbill/parent-tools" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="${APP_VERSION}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"

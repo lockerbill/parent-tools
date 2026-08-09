@@ -1,0 +1,23 @@
+services:
+  homedojo:
+    image: ghcr.io/lockerbill/homedojo:1.0.0
+    restart: unless-stopped
+    ports:
+      - "31080:80"
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      APP_HOST: ${APP_HOST:-localhost:31080}
+      SOLID_QUEUE_IN_PUMA: "1"
+      FORCE_SSL: ${FORCE_SSL:-}
+      APP_HOSTS: ${APP_HOSTS:-}
+    volumes:
+      - homedojo_storage:/rails/storage
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  homedojo_storage:

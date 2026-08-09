@@ -6,6 +6,28 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
+# Keep Rails' signing key with the rest of HomeDojo's persisted state. An
+# explicitly configured value always wins; otherwise first boot creates a key
+# that survives container replacement, upgrades, and restores of storage/.
+if [ -z "${SECRET_KEY_BASE:-}" ]; then
+  secret_file="/rails/storage/.secret_key_base"
+
+  if [ ! -s "$secret_file" ]; then
+    umask 077
+    temporary_secret="$(mktemp /rails/storage/.secret_key_base.XXXXXX)"
+    ruby -rsecurerandom -e 'print SecureRandom.hex(64)' > "$temporary_secret"
+    chmod 600 "$temporary_secret"
+    mv "$temporary_secret" "$secret_file"
+  fi
+
+  SECRET_KEY_BASE="$(tr -d '\r\n' < "$secret_file")"
+  if [ "${#SECRET_KEY_BASE}" -lt 64 ]; then
+    echo "HomeDojo secret key file is invalid: $secret_file" >&2
+    exit 1
+  fi
+  export SECRET_KEY_BASE
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare

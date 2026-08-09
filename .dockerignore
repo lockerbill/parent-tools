@@ -38,6 +38,7 @@
 
 # Ignore CI service files.
 /.github
+/packaging
 
 # Ignore development files
 /.devcontainer

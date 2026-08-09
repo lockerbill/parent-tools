@@ -1,13 +1,14 @@
 services:
   app:
-    build: .
-    # Or pull a published image instead of building:
-    # image: ghcr.io/lockerbill/homedojo:latest
+    image: ghcr.io/lockerbill/homedojo:1.0.0
+    # For a local production-image build, replace image with: build: .
     restart: unless-stopped
     ports:
       - "3000:80"            # Thruster listens on 80 inside the container
     environment:
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?run `openssl rand -hex 64` and put it in .env}
+      # Optional override. When empty, HomeDojo creates and persists a signing
+      # key in /rails/storage/.secret_key_base on first boot.
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
       TZ: ${TZ:-Australia/Perth}
       APP_HOST: ${APP_HOST:-localhost:3000}
       # Uncomment once you are behind a TLS-terminating reverse proxy:

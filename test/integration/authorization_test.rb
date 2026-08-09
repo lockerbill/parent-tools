@@ -32,6 +32,24 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
     assert_redirected_to dojo_dashboard_path
   end
 
+  test "new parent accounts cannot elevate their submitted role" do
+    sign_in_as users(:owner)
+
+    assert_difference -> { family.users.count }, 1 do
+      post dojo_users_path, params: {
+        user: {
+          name: "Second Parent",
+          email_address: "second-parent@example.com",
+          password: "supersecret123",
+          password_confirmation: "supersecret123",
+          role: "owner"
+        }
+      }
+    end
+
+    assert_equal "parent", family.users.find_by!(email_address: "second-parent@example.com").role
+  end
+
   test "only the owner changes family settings" do
     sign_in_as users(:parent)
 

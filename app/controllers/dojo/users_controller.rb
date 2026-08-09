@@ -11,8 +11,7 @@ module Dojo
     end
 
     def create
-      @user = current_family.users.new(user_params)
-      @user.role = "parent" unless User.roles.key?(@user.role)
+      @user = current_family.users.new(user_params.merge(role: "parent"))
 
       if @user.save
         redirect_to dojo_users_path, notice: "#{@user.name} can now sign in."
@@ -34,7 +33,7 @@ module Dojo
 
     private
       def user_params
-        params.require(:user).permit(:name, :email_address, :password, :password_confirmation, :role)
+        params.require(:user).permit(:name, :email_address, :password, :password_confirmation)
       end
   end
 end

@@ -1,0 +1,35 @@
+resources:
+  limits:
+    cpus: 1.0
+    memory: 512
+
+TZ: Australia/Perth
+
+homedojo:
+  app_host: homedojo.example.com
+  app_hosts: homedojo.example.com
+  force_ssl: true
+  smtp_enabled: true
+  smtp_address: smtp.example.com
+  smtp_port: 587
+  smtp_user_name: homedojo@example.com
+  smtp_password: test-only-password
+  smtp_starttls: true
+  mail_from: homedojo@example.com
+  additional_envs:
+    - name: RAILS_LOG_LEVEL
+      value: info
+
+network:
+  host_network: false
+  web_port:
+    bind_mode: published
+    port_number: 31081
+
+storage:
+  data:
+    type: host_path
+    host_path_config:
+      acl_enable: false
+      path: /opt/tests/mnt/homedojo-hostpath/data
+  additional_storage: []
