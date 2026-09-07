@@ -44,7 +44,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Resize child avatars (libvips is installed in the Dockerfile)
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.1"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
